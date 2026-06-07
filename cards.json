@@ -1,0 +1,97 @@
+{
+  "American Express|Platinum": {
+    "rewardsProgram": "Membership Rewards",
+    "network": "Amex",
+    "earnRates": [
+      { "category": "Flights (booked directly with airline)", "multiplier": 5 },
+      { "category": "Hotels (Amex Travel portal)", "multiplier": 5 },
+      { "category": "Dining", "multiplier": 1 },
+      { "category": "Everything Else", "multiplier": 1 }
+    ],
+    "benefits": [
+      { "name": "Airline Fee Credit",           "value": 200, "frequency": "Annual",  "category": "Travel"    },
+      { "name": "Hotel Credit (FHR/THC)",       "value": 200, "frequency": "Annual",  "category": "Travel"    },
+      { "name": "Uber Cash",                    "value": 200, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Saks Fifth Avenue Credit",     "value": 100, "frequency": "Annual",  "category": "Shopping"  },
+      { "name": "Digital Entertainment Credit", "value": 240, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Walmart+ Membership Credit",   "value": 155, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Equinox Credit",               "value": 300, "frequency": "Annual",  "category": "Fitness"   },
+      { "name": "Clear Plus Credit",            "value": 189, "frequency": "Annual",  "category": "Travel"    },
+      { "name": "Global Entry / TSA PreCheck",  "value": 100, "frequency": "4 Years", "category": "Travel"    },
+      { "name": "Centurion Lounge Access",      "value": null, "frequency": "Ongoing","category": "Travel"    }
+    ]
+  },
+
+  "American Express|Gold": {
+    "rewardsProgram": "Membership Rewards",
+    "network": "Amex",
+    "earnRates": [
+      { "category": "Dining (worldwide)", "multiplier": 4 },
+      { "category": "U.S. Supermarkets (up to $25k/yr)", "multiplier": 4 },
+      { "category": "Flights (booked directly or Amex Travel)", "multiplier": 3 },
+      { "category": "Everything Else", "multiplier": 1 }
+    ],
+    "benefits": [
+      { "name": "Dining Credit (Grubhub, Cheesecake Factory, etc.)", "value": 120, "frequency": "Annual",  "category": "Dining"    },
+      { "name": "Uber Cash",                                          "value": 120, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Dunkin Credit",                                      "value": 84,  "frequency": "Annual",  "category": "Dining"    },
+      { "name": "Resy Credit",                                        "value": 50,  "frequency": "Annual",  "category": "Dining"    }
+    ]
+  },
+
+  "Chase|Sapphire Preferred": {
+    "rewardsProgram": "Ultimate Rewards",
+    "network": "Visa",
+    "earnRates": [
+      { "category": "Travel (Chase portal)", "multiplier": 5 },
+      { "category": "Dining", "multiplier": 3 },
+      { "category": "Online Grocery (excl. Walmart, Target, Costco)", "multiplier": 3 },
+      { "category": "Streaming Services", "multiplier": 3 },
+      { "category": "Other Travel", "multiplier": 2 },
+      { "category": "Everything Else", "multiplier": 1 }
+    ],
+    "benefits": [
+      { "name": "Annual Hotel Credit (Chase Travel)",  "value": 50,  "frequency": "Annual",  "category": "Travel"    },
+      { "name": "DoorDash DashPass",                   "value": 120, "frequency": "Annual",  "category": "Dining"    },
+      { "name": "Instacart+ Membership",               "value": 60,  "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "10% Anniversary Points Bonus",        "value": null, "frequency": "Annual", "category": "Rewards"   }
+    ]
+  },
+
+  "Chase|Sapphire Reserve": {
+    "rewardsProgram": "Ultimate Rewards",
+    "network": "Visa",
+    "earnRates": [
+      { "category": "Travel (Chase portal)", "multiplier": 10 },
+      { "category": "Hotels & Car Rentals (Chase portal)", "multiplier": 10 },
+      { "category": "Dining", "multiplier": 3 },
+      { "category": "Other Travel", "multiplier": 3 },
+      { "category": "Everything Else", "multiplier": 1 }
+    ],
+    "benefits": [
+      { "name": "Annual Travel Credit",        "value": 300, "frequency": "Annual",  "category": "Travel"    },
+      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel"    },
+      { "name": "DoorDash DashPass",           "value": 120, "frequency": "Annual",  "category": "Dining"    },
+      { "name": "Instacart+ Membership",       "value": 60,  "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Lyft Pink Membership",        "value": 120, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Priority Pass Lounge Access", "value": null, "frequency": "Ongoing","category": "Travel"    }
+    ]
+  },
+
+  "Capital One|Venture X": {
+    "rewardsProgram": "Capital One Miles",
+    "network": "Visa",
+    "earnRates": [
+      { "category": "Travel (Capital One Travel portal)", "multiplier": 10 },
+      { "category": "Hotels & Rental Cars (Capital One Travel)", "multiplier": 5 },
+      { "category": "Everything Else", "multiplier": 2 }
+    ],
+    "benefits": [
+      { "name": "Annual Travel Credit (Capital One Travel)", "value": 300, "frequency": "Annual",  "category": "Travel"    },
+      { "name": "Anniversary Bonus Miles",                   "value": 100, "frequency": "Annual",  "category": "Rewards"   },
+      { "name": "Global Entry / TSA PreCheck",               "value": 100, "frequency": "4 Years", "category": "Travel"    },
+      { "name": "Priority Pass Lounge Access",               "value": null, "frequency": "Ongoing","category": "Travel"    },
+      { "name": "Capital One Lounge Access",                 "value": null, "frequency": "Ongoing","category": "Travel"    }
+    ]
+  }
+}
