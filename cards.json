@@ -1,4 +1,67 @@
 {
+  "_meta": {
+    "lastUpdated": "June 2026",
+    "source": "The Points Guy Monthly Valuations",
+    "url": "https://thepointsguy.com/loyalty-programs/monthly-valuations/"
+  },
+
+  "programs": {
+    "Membership Rewards": 2.0,
+    "Ultimate Rewards":   2.05,
+    "ThankYou Rewards":   1.9,
+    "Capital One Miles":  1.85,
+    "Wells Fargo Rewards": 1.75,
+    "Bilt Points":        2.2,
+    "AAdvantage":         1.6,
+    "SkyMiles":           1.2,
+    "MileagePlus":        1.35,
+    "TrueBlue":           1.35,
+    "Atmos Rewards":      1.4,
+    "Marriott Bonvoy":    0.8,
+    "World of Hyatt":     1.55,
+    "Hilton Honors":      0.35
+  },
+
+  "American Express|Platinum": {
+    "annualFee": 695,
+    "rewardsProgram": "Membership Rewards",
+    "network": "Amex",
+    "earnRates": [ ... ],
+    "benefits": [ ... ]
+  },
+
+  "American Express|Gold": {
+    "annualFee": 250,
+    "rewardsProgram": "Membership Rewards",
+    "network": "Amex",
+    "earnRates": [ ... ],
+    "benefits": [ ... ]
+  },
+
+  "Chase|Sapphire Preferred": {
+    "annualFee": 95,
+    "rewardsProgram": "Ultimate Rewards",
+    "network": "Visa",
+    "earnRates": [ ... ],
+    "benefits": [ ... ]
+  },
+
+  "Chase|Sapphire Reserve": {
+    "annualFee": 550,
+    "rewardsProgram": "Ultimate Rewards",
+    "network": "Visa",
+    "earnRates": [ ... ],
+    "benefits": [ ... ]
+  },
+
+  "Capital One|Venture X": {
+    "annualFee": 395,
+    "rewardsProgram": "Capital One Miles",
+    "network": "Visa",
+    "earnRates": [ ... ],
+    "benefits": [ ... ]
+  }
+}
   "American Express|Platinum": {
     "annualFee": 695,
     "rewardsProgram": "Membership Rewards",
