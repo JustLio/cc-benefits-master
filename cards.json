@@ -1,5 +1,6 @@
 {
   "American Express|Platinum": {
+    "annualFee": 695,
     "rewardsProgram": "Membership Rewards",
     "network": "Amex",
     "earnRates": [
@@ -23,6 +24,7 @@
   },
 
   "American Express|Gold": {
+    "annualFee": 250,
     "rewardsProgram": "Membership Rewards",
     "network": "Amex",
     "earnRates": [
@@ -40,6 +42,7 @@
   },
 
   "Chase|Sapphire Preferred": {
+    "annualFee": 95,
     "rewardsProgram": "Ultimate Rewards",
     "network": "Visa",
     "earnRates": [
@@ -59,6 +62,7 @@
   },
 
   "Chase|Sapphire Reserve": {
+    "annualFee": 550,
     "rewardsProgram": "Ultimate Rewards",
     "network": "Visa",
     "earnRates": [
@@ -79,6 +83,7 @@
   },
 
   "Capital One|Venture X": {
+    "annualFee": 395,
     "rewardsProgram": "Capital One Miles",
     "network": "Visa",
     "earnRates": [
