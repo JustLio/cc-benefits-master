@@ -135,6 +135,14 @@
   let data = {};
   let previewData = null;
 
+  // Escape strings before injecting into innerHTML. Card / bank / benefit names
+  // come from the GitHub JSON, so a name with & < > " ' shouldn't break markup.
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(m) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
+    });
+  }
+
   function render() {
     document.getElementById('progressFill').style.width = (step === TOTAL_STEPS ? 100 : Math.round((step - 1) / TOTAL_STEPS * 100)) + '%';
 
@@ -144,7 +152,7 @@
     if (step === 1) {
       const banks = Object.keys(cardDatabase);
       const chips = banks.map(b =>
-        `<div class="chip ${data.bank === b ? 'selected' : ''}" data-bank="${b.replace(/"/g, '&quot;')}" onclick="selectBank(this)">${b}</div>`
+        `<div class="chip ${data.bank === b ? 'selected' : ''}" data-bank="${esc(b)}" onclick="selectBank(this)">${esc(b)}</div>`
       ).join('');
       content = `
         <div class="body">
@@ -164,12 +172,12 @@
     } else if (step === 2) {
       const cards = cardDatabase[data.bank] || [];
       const options = cards.map(c =>
-        `<option value="${c}" ${data.cardName === c ? 'selected' : ''}>${c}</option>`
+        `<option value="${esc(c)}" ${data.cardName === c ? 'selected' : ''}>${esc(c)}</option>`
       ).join('');
       content = `
         <div class="body">
           <div class="step-label">Step 2 of ${TOTAL_STEPS}</div>
-          <div class="question">Which ${data.bank} card?</div>
+          <div class="question">Which ${esc(data.bank)} card?</div>
           <select id="cardSelect" onchange="data.cardName = this.value">
             <option value="">— Select a card —</option>
             ${options}
@@ -255,8 +263,8 @@
           ? `<div class="preview-section-label">⚡ Earn Rates</div>` +
             earnRates.map(r =>
               `<div class="earn-rate-row">
-                <span class="earn-mult-badge">${r.multiplier}x</span>
-                <span class="earn-cat-text">${r.category}</span>
+                <span class="earn-mult-badge">${esc(r.multiplier)}x</span>
+                <span class="earn-cat-text">${esc(r.category)}</span>
               </div>`
             ).join('')
           : '';
@@ -264,10 +272,10 @@
         const benefitsHtml = benefits.length
           ? `<div class="preview-section-label">✨ Benefits</div>` +
             benefits.map(b => {
-              const valStr  = (b.value !== null && b.value !== undefined) ? `<span class="benefit-val">$${b.value}</span>` : '';
-              const freqStr = b.frequency ? `<span class="benefit-freq">${b.frequency}</span>` : '';
+              const valStr  = (b.value !== null && b.value !== undefined) ? `<span class="benefit-val">$${esc(b.value)}</span>` : '';
+              const freqStr = b.frequency ? `<span class="benefit-freq">${esc(b.frequency)}</span>` : '';
               return `<div class="benefit-item">
-                <div class="benefit-item-name">${b.name || '—'}</div>
+                <div class="benefit-item-name">${esc(b.name) || '—'}</div>
                 ${(valStr || freqStr) ? `<div class="benefit-meta">${valStr}${freqStr}</div>` : ''}
               </div>`;
             }).join('')
@@ -278,8 +286,8 @@
             <div class="step-label">Step 5 of ${TOTAL_STEPS} — Review</div>
             <div class="preview-card-header">
               <div>
-                <div class="preview-card-name">${data.cardName}</div>
-                <div class="preview-bank-name">${data.bank}</div>
+                <div class="preview-card-name">${esc(data.cardName)}</div>
+                <div class="preview-bank-name">${esc(data.bank)}</div>
               </div>
               <div class="preview-fee-badge">Annual Fee: ${fee}</div>
             </div>

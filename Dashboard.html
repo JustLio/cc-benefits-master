@@ -335,6 +335,14 @@
 </div>
 
 <script>
+  // Escape user/JSON-derived strings before injecting into innerHTML so card or
+  // benefit names containing & < > " ' can't corrupt the markup.
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(m) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
+    });
+  }
+
   function buildDonut(remaining, total) {
     if (total == null || total === 0) return '<span style="min-width:40px;text-align:center;font-size:13px;font-family:monospace;color:var(--text-muted)">—</span>';
     const r = 13, circ = 2 * Math.PI * r;
@@ -369,7 +377,7 @@
     const pinnedBenefits = payload.pinnedBenefits || [];
     if (!cards.length) {
       document.getElementById('main').innerHTML =
-        `<div class="empty"><div class="empty-icon">💳</div><h3>No cards yet</h3><p>Use "Add New Card" to get started.</p></div>`;
+        `<div class="empty"><div class="empty-icon">💳</div><h3>No cards yet</h3><p>Use the ＋ New Card button to add your first card.</p></div>`;
       return;
     }
 
@@ -380,6 +388,10 @@
     const totalFees    = cards.reduce((s, c) => s + c.annualFee, 0);
     const totalPoints  = cards.reduce((s, c) => s + c.points, 0);
     const totalValue   = cards.reduce((s, c) => s + (c.points * (c.cpp / 100)), 0);
+    // Avg CPP is an UNWEIGHTED mean of each card's cents-per-point (cards with no
+    // CPP excluded). It intentionally differs from Estimated Value, which weights
+    // each card's CPP by its points balance — so a high-CPP card with few points
+    // lifts this average but barely moves total value.
     const avgCpp       = cards.filter(c => c.cpp > 0).reduce((s,c,_,a) => s + c.cpp/a.length, 0);
 
     // Days until renewal
@@ -464,7 +476,7 @@
         <span class="kpi-icon">💰</span>
         <div class="kpi-value">$${Math.round(totalValue).toLocaleString()}</div>
         <div class="kpi-label">Estimated Value</div>
-        <div class="kpi-sub">Avg CPP <span>${avgCpp.toFixed(2)}¢</span></div>
+        <div class="kpi-sub" title="Unweighted average of each card's cents-per-point (cards with no CPP excluded). Estimated Value above is points-weighted.">Avg CPP <span>${avgCpp.toFixed(2)}¢</span></div>
       </div>
       <div class="kpi purple">
         <span class="kpi-icon">🔔</span>
@@ -484,8 +496,8 @@
       html += `<div class="bar-row">
         <div class="bar-meta">
           <div>
-            <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">${c.bank}</div>
-            <span class="bar-name">${c.cardName}</span>
+            <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:2px">${esc(c.bank)}</div>
+            <span class="bar-name">${esc(c.cardName)}</span>
           </div>
           <span class="bar-val">${c.points.toLocaleString()}</span>
         </div>
@@ -505,8 +517,8 @@
       html += `<div class="renewal-item">
         <div class="renewal-dot ${urg}"></div>
         <div class="renewal-info">
-          <div class="renewal-bank">${c.bank}</div>
-          <div class="renewal-name">${c.cardName}</div>
+          <div class="renewal-bank">${esc(c.bank)}</div>
+          <div class="renewal-name">${esc(c.cardName)}</div>
           <div class="renewal-bank">$${c.annualFee.toLocaleString()}/yr</div>
         </div>
         <div class="renewal-right">
@@ -533,8 +545,8 @@
       html += `<div class="card-tile">
         <div class="card-tile-top">
           <div>
-            <div class="card-bank">${c.bank}</div>
-            <div class="card-name">${c.cardName}</div>
+            <div class="card-bank">${esc(c.bank)}</div>
+            <div class="card-name">${esc(c.cardName)}</div>
           </div>
           ${networkBadge(c.network)}
         </div>
@@ -591,8 +603,8 @@
         html += `<div class="credits-card">
           <div class="credits-card-header">
             <div>
-              <div class="credits-card-title">${card.cardName}</div>
-              <div class="credits-card-bank">${card.bank}</div>
+              <div class="credits-card-title">${esc(card.cardName)}</div>
+              <div class="credits-card-bank">${esc(card.bank)}</div>
             </div>
             ${toUseStr ? `<span class="credits-remaining">${toUseStr}</span>` : ''}
           </div>`;
@@ -601,7 +613,7 @@
           const rstCls   = c.daysLeft == null ? 'ok' : c.daysLeft <= 5 ? 'urgent' : c.daysLeft <= 14 ? 'soon' : 'ok';
           const daysLabel = c.daysLeft != null ? c.daysLeft + 'd' : '—';
           html += `<div class="credit-row">
-            <span class="credit-name">${c.name}</span>
+            <span class="credit-name">${esc(c.name)}</span>
             ${buildDonut(c.remaining, c.valueNum)}
             <span class="reset-pill ${rstCls}">${daysLabel}</span>
           </div>`;
@@ -616,15 +628,15 @@
     if (pinnedBenefits.length) {
       html += `<div class="pinned-grid">`;
       pinnedBenefits.forEach(b => {
-        const valHtml = (b.value && b.value !== '—') ? `<div class="pinned-value">${b.value}</div>` : '';
+        const valHtml = (b.value && b.value !== '—') ? `<div class="pinned-value">${esc(b.value)}</div>` : '';
         html += `<div class="pinned-item">
           <div>
-            <div class="pinned-name">${b.name}</div>
-            <div class="pinned-sub">${b.bank} ${b.cardName} · ${b.category}</div>
+            <div class="pinned-name">${esc(b.name)}</div>
+            <div class="pinned-sub">${esc(b.bank)} ${esc(b.cardName)} · ${esc(b.category)}</div>
           </div>
           <div class="pinned-right">
             ${valHtml}
-            <div class="pinned-freq">${b.frequency}</div>
+            <div class="pinned-freq">${esc(b.frequency)}</div>
           </div>
         </div>`;
       });

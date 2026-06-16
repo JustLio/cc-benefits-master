@@ -1,4 +1,14 @@
-var CARD_DATA_URL = 'https://raw.githubusercontent.com/JustLio/cc-benefits-master/refs/heads/main/cards.json';
+// Branch of the cc-benefits-master repo that cards.json is pulled from.
+// Keep this on 'main' for production. Point it at a feature branch ONLY for
+// temporary testing of unmerged card-data changes, then switch it back —
+// the live app always reads whatever branch is named here.
+var CARD_DATA_BRANCH = 'main';
+var CARD_DATA_URL = 'https://raw.githubusercontent.com/JustLio/cc-benefits-master/refs/heads/' + CARD_DATA_BRANCH + '/cards.json';
+
+// Bump this when the Dashboard / Annual Fee Analyzer static layout (column
+// widths, header row heights, fonts) changes, so refresh re-applies it once
+// instead of on every single edit. See refreshDashboard / refreshAnnualFeeAnalyzer.
+var LAYOUT_VERSION = '1';
 
 // Opens the HTML dialog as a modal popup
 function showEntryForm() {
@@ -201,7 +211,10 @@ function onOpen() {
   if (dash) {
     ss.setActiveSheet(dash);
     syncBenefitsTracker();
-    syncBenefitsFromJson();
+    // NOTE: JSON reconciliation (syncBenefitsFromJson) needs UrlFetchApp, which a
+    // simple onOpen trigger is NOT authorized to call — it would silently fail here.
+    // It runs from the installable trigger instead (onOpenSync). Run installTriggers()
+    // once from the Apps Script editor to enable on-open card-data sync.
     refreshDashboard();
   }
   if (!ss.getSheetByName('Annual Fee Analyzer')) {
@@ -219,6 +232,28 @@ function onOpen() {
   if (dash) ss.setActiveSheet(dash);
 }
 
+// Installable onOpen trigger target — runs WITH authorization, so (unlike the
+// simple onOpen above) it can call UrlFetchApp to reconcile the Credits Tracker
+// against the latest cards.json. Enable by running installTriggers() once.
+function onOpenSync() {
+  syncBenefitsFromJson();
+  refreshDashboard();
+  refreshAnnualFeeAnalyzer();
+}
+
+// Run ONCE from the Apps Script editor to enable on-open card-data sync.
+// Creates (and de-dupes) an installable onOpen trigger pointing at onOpenSync.
+function installTriggers() {
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'onOpenSync') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('onOpenSync')
+    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .onOpen()
+    .create();
+  SpreadsheetApp.getUi().alert('✅ Auto-sync enabled. Card data will refresh from GitHub each time you open the sheet.');
+}
+
 // Fires on cell edits — refreshes Dashboard on any Raw Data change,
 // syncs Benefits Tracker only when bank/card columns are touched,
 // live-updates dashboard + AFA when PIN column (col 9) is toggled
@@ -232,6 +267,62 @@ function onEdit(e) {
     refreshDashboard();
     refreshAnnualFeeAnalyzer();
   }
+  // Dashboard "USED" checkbox (col F / 6) toggled — persist usage so it survives refresh
+  if (sheetName === 'Dashboard' && e.range.getColumn() === 6) {
+    markCreditUsedFromDashboard_(e.range);
+  }
+}
+
+// Persists a Dashboard "USED" checkbox toggle into Credit Card Raw Data col J so
+// used / remaining amounts survive the next dashboard rebuild. Col J stores a
+// per-card { "credit name": usedAmount } map. The checkbox is all-or-nothing:
+// checked marks the full per-period value as used, unchecked clears it.
+function markCreditUsedFromDashboard_(cell) {
+  var ss   = SpreadsheetApp.getActiveSpreadsheet();
+  var dash = cell.getSheet();
+  var row  = cell.getRow();
+
+  // Act only on genuine credit rows: a boolean checkbox, a named credit in col B,
+  // and a numeric per-period value in col C.
+  var isChecked = cell.getValue();
+  if (isChecked !== true && isChecked !== false) return;
+  var creditName = (dash.getRange(row, 2).getValue() || '').toString().trim();
+  if (!creditName || creditName.indexOf('💳') === 0) return;
+  var perPeriod = parseFloat(dash.getRange(row, 3).getValue());
+  if (isNaN(perPeriod)) return;
+
+  // Walk up to the nearest card header row ("💳  BANK  —  CARD") to identify the card.
+  var bank = null, card = null;
+  for (var r = row - 1; r >= 7; r--) {
+    var v = (dash.getRange(r, 2).getValue() || '').toString();
+    if (v.indexOf('💳  ') === 0 && v.indexOf('  —  ') !== -1) {
+      var inner = v.substring(4);
+      var sep   = inner.indexOf('  —  ');
+      bank = inner.substring(0, sep).trim();
+      card = inner.substring(sep + 5).trim();
+      break;
+    }
+  }
+  if (!bank || !card) return;
+
+  // Update the used-amounts JSON in Raw Data col J for this card.
+  var raw = ss.getSheetByName('Credit Card Raw Data');
+  if (!raw || raw.getLastRow() < 2) return;
+  var keys = raw.getRange(2, 1, raw.getLastRow() - 1, 2).getValues();
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i][0] === bank && keys[i][1] === card) {
+      var cellJ    = raw.getRange(i + 2, 10);
+      var used     = {};
+      var existing = cellJ.getValue();
+      if (existing) { try { used = JSON.parse(existing); } catch (e2) { used = {}; } }
+      if (isChecked) used[creditName] = perPeriod;
+      else           delete used[creditName];
+      cellJ.setValue(Object.keys(used).length ? JSON.stringify(used) : '');
+      break;
+    }
+  }
+
+  refreshDashboard();
 }
 
 // Removes Benefits Tracker sections for cards no longer in Raw Data
@@ -566,6 +657,26 @@ function setupDashboard() {
   SpreadsheetApp.getUi().alert('✅ Dashboard is ready. Use Insert → Drawing to add a "New Card" button, then right-click it → Assign script → showEntryForm.');
 }
 
+// Returns true if the gated static layout for `key` should be (re)applied —
+// i.e. the stored version differs from LAYOUT_VERSION. Defaults to true if the
+// property service can't be read (keeps the old always-apply behaviour as a safe
+// fallback in unauthorized contexts).
+function layoutNeedsApply_(key) {
+  try {
+    return PropertiesService.getDocumentProperties().getProperty(key) !== LAYOUT_VERSION;
+  } catch (e) {
+    return true;
+  }
+}
+
+// Records that the gated layout for `key` is now at LAYOUT_VERSION. No-op if the
+// property service is unavailable (layout simply re-applies next time).
+function layoutMarkApplied_(key) {
+  try {
+    PropertiesService.getDocumentProperties().setProperty(key, LAYOUT_VERSION);
+  } catch (e) {}
+}
+
 // ─────────────────────────────────────────
 // Called on every open — writes live card rows
 // ─────────────────────────────────────────
@@ -575,29 +686,37 @@ function refreshDashboard() {
   var dash = ss.getSheetByName('Dashboard');
   if (!dash || !raw) return;
 
-  // Column widths for 1920×1080 — applied every refresh so existing sheets stay in sync
-  dash.setColumnWidth(1, 24);  dash.setColumnWidth(2, 275);
-  dash.setColumnWidth(3, 180); dash.setColumnWidth(4, 180);
-  dash.setColumnWidth(5, 155); dash.setColumnWidth(6, 220);
-  dash.setColumnWidth(7, 170); dash.setColumnWidth(8, 24);
-  // Title / KPI area row heights + font sizes
-  dash.setRowHeight(1, 80); dash.setRowHeight(2, 18);
-  dash.setRowHeight(3, 28); dash.setRowHeight(4, 70);
-  dash.setRowHeight(5, 28); dash.setRowHeight(6, 28);
-  dash.getRange('B1').setFontSize(18);
-  dash.getRange('A3:H3').setFontSize(10);
-  dash.getRange('B4:E4').setFontSize(32);
-  dash.getRange('B5:E5').setFontSize(11);
-  // Self-heal: C5 and E5 cleared; D5 shows avg CPP
-  dash.getRange('C5').clearContent();
-  dash.getRange('E5').clearContent();
-  var rawName = "'Credit Card Raw Data'";
-  if (!dash.getRange('D5').getFormula()) {
-    dash.getRange('D5')
-      .setFormula('=IF(COUNTA('+rawName+'!A:A)>1,"Avg "&TEXT(IFERROR(AVERAGEIF('+rawName+'!D2:D1000,">"&0),0),"0.00")&"¢ per point","")')
-      .setFontSize(11).setFontColor('#6b7280').setVerticalAlignment('top');
+  // Static layout (column widths, header row heights, fonts) only needs to be
+  // applied on setup or after a LAYOUT_VERSION bump — not on every single edit.
+  // Gated behind a document property so onEdit refreshes stay cheap. If the
+  // property service is unavailable (e.g. an unauthorized simple-trigger context),
+  // fall back to applying it, matching the previous always-on behaviour.
+  if (layoutNeedsApply_('dashLayoutV')) {
+    // Column widths for 1920×1080
+    dash.setColumnWidth(1, 24);  dash.setColumnWidth(2, 275);
+    dash.setColumnWidth(3, 180); dash.setColumnWidth(4, 180);
+    dash.setColumnWidth(5, 155); dash.setColumnWidth(6, 220);
+    dash.setColumnWidth(7, 170); dash.setColumnWidth(8, 24);
+    // Title / KPI area row heights + font sizes
+    dash.setRowHeight(1, 80); dash.setRowHeight(2, 18);
+    dash.setRowHeight(3, 28); dash.setRowHeight(4, 70);
+    dash.setRowHeight(5, 28); dash.setRowHeight(6, 28);
+    dash.getRange('B1').setFontSize(18);
+    dash.getRange('A3:H3').setFontSize(10);
+    dash.getRange('B4:E4').setFontSize(32);
+    dash.getRange('B5:E5').setFontSize(11);
+    // Self-heal: C5 and E5 cleared; D5 shows avg CPP
+    dash.getRange('C5').clearContent();
+    dash.getRange('E5').clearContent();
+    var rawName = "'Credit Card Raw Data'";
+    if (!dash.getRange('D5').getFormula()) {
+      dash.getRange('D5')
+        .setFormula('=IF(COUNTA('+rawName+'!A:A)>1,"Avg "&TEXT(IFERROR(AVERAGEIF('+rawName+'!D2:D1000,">"&0),0),"0.00")&"¢ per point","")')
+        .setFontSize(11).setFontColor('#6b7280').setVerticalAlignment('top');
+    }
+    dash.getRange('B3:E5').setHorizontalAlignment('center');
+    layoutMarkApplied_('dashLayoutV');
   }
-  dash.getRange('B3:E5').setHorizontalAlignment('center');
 
   var today   = new Date(); today.setHours(0,0,0,0);
   var lastRow = raw.getLastRow();
@@ -654,11 +773,12 @@ function refreshDashboard() {
       var valDisplay = perPeriod !== null
         ? '$' + (perPeriod % 1 === 0 ? perPeriod : perPeriod.toFixed(2))
         : '—';
-      if (perPeriod !== null) cardTotals[key] += perPeriod;
       var rd2       = getNextReset_(br[4]);
       var dLeft2    = rd2 ? Math.round((rd2 - today) / 86400000) : null;
       var notesUsed = (rawUsed[key] || {})[br[2]] || 0;
       var remaining = perPeriod !== null ? Math.max(0, Math.round((perPeriod - notesUsed) * 100) / 100) : null;
+      // "$X to use" reflects what's still UNused this period, not the full value.
+      if (remaining !== null) cardTotals[key] += remaining;
       var daysStr   = dLeft2 === null ? null : dLeft2 < 0 ? 'Overdue' : dLeft2 === 0 ? 'Today' : dLeft2 + ' days left';
       var rstLabel  = rd2
         ? daysStr + '\n' + Utilities.formatDate(rd2, Session.getScriptTimeZone(), 'MMM d')
@@ -814,7 +934,9 @@ function refreshDashboard() {
         var bg     = i % 2 === 0 ? '#1a1d27' : '#141720';
         var valClr = b.valueNum !== null ? '#f5a623' : '#6b7280';
         var rstClr = b.daysLeft === null ? '#6b7280' : b.daysLeft <= 5 ? '#ff5c5c' : b.daysLeft <= 14 ? '#f5a623' : '#6b7280';
-        bVals.push(['', b.name, b.valueNum !== null ? b.valueNum : '', b.frequency, b.resetLabel || '—', false, '', '']);
+        // Reflect persisted usage (Raw Data col J): fully-used credits show checked.
+        var used   = b.valueNum !== null && b.remaining !== null && b.remaining <= 0;
+        bVals.push(['', b.name, b.valueNum !== null ? b.valueNum : '', b.frequency, b.resetLabel || '—', used, '', '']);
         bBgs.push(Array(8).fill(bg));
         bFgClrs.push(['#e8eaf0','#e8eaf0',valClr,'#6b7280',rstClr,'#e8eaf0','#e8eaf0','#e8eaf0']);
         bFgSzs.push([11, 13, 13, 11, 12, 11, 11, 11]);
@@ -864,10 +986,16 @@ function getCardList() {
 }
 
 // ── Fetches and parses the full cards JSON from GitHub ──
+// Result is cached for 6h via CacheService so repeated calls within a flow
+// (e.g. getCardList → getCardPreview → newCard) don't each hit GitHub.
 function fetchAllCardData() {
   try {
-    var response = UrlFetchApp.fetch(CARD_DATA_URL);
-    return JSON.parse(response.getContentText());
+    var cache = null, cached = null;
+    try { cache = CacheService.getScriptCache(); cached = cache.get('cardsJson'); } catch (ce) {}
+    if (cached) return JSON.parse(cached);
+    var text = UrlFetchApp.fetch(CARD_DATA_URL).getContentText();
+    if (cache) { try { cache.put('cardsJson', text, 21600); } catch (pe) {} }
+    return JSON.parse(text);
   } catch(e) {
     Logger.log('fetchAllCardData error: ' + e.message);
     return null;
@@ -1120,14 +1248,17 @@ function refreshAnnualFeeAnalyzer() {
   var bt  = ss.getSheetByName('Credits Tracker');
   if (!raw) return;
 
-  // Column widths for 1920×1080
-  sheet.setColumnWidth(1, 24);  // A: margin
-  sheet.setColumnWidth(2, 280); // B: card/benefit name
-  sheet.setColumnWidth(3, 130); // C: value used
-  sheet.setColumnWidth(4, 180); // D: coverage bar
-  sheet.setColumnWidth(5, 140); // E: % covered
-  sheet.setColumnWidth(6, 225); // F: verdict
-  sheet.setColumnWidth(7, 24);  // G: margin
+  // Column widths for 1920×1080 — only on setup / LAYOUT_VERSION bump (see refreshDashboard)
+  if (layoutNeedsApply_('afaLayoutV')) {
+    sheet.setColumnWidth(1, 24);  // A: margin
+    sheet.setColumnWidth(2, 280); // B: card/benefit name
+    sheet.setColumnWidth(3, 130); // C: value used
+    sheet.setColumnWidth(4, 180); // D: coverage bar
+    sheet.setColumnWidth(5, 140); // E: % covered
+    sheet.setColumnWidth(6, 225); // F: verdict
+    sheet.setColumnWidth(7, 24);  // G: margin
+    layoutMarkApplied_('afaLayoutV');
+  }
 
   // Read card list (9 cols to include col I override data)
   var rawRows = raw.getLastRow() > 1
