@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: rgba(255,255,255,0.07);
+    --blue: #4f8ef7;
+    --text: #e8eaf0;
+    --text-muted: #6b7280;
+    --amber: #f5a623;
+    --green: #3ecf8e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 26px 28px;
+  }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 22px; color: var(--text); }
+  .field { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 7px;
+  }
+  select, input[type="number"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select:focus, input[type="number"]:focus { border-color: var(--blue); }
+  select option { background: #1a1d27; }
+  .current-pts {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 7px;
+  }
+  .current-pts span { color: var(--amber); font-weight: 600; }
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+  }
+  .btn-cancel {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-save {
+    background: var(--blue);
+    color: #fff;
+  }
+  .btn-save:disabled { opacity: 0.45; cursor: not-allowed; }
+  .status { font-size: 12px; color: var(--text-muted); margin-top: 12px; min-height: 16px; }
+  .status.err { color: #ff5c5c; }
+</style>
+</head>
+<body>
+
+<h2>✏️  Update Points Balance</h2>
+
+<div class="field">
+  <label for="cardSel">Card</label>
+  <select id="cardSel" onchange="onCardChange()">
+    <option value="">Loading…</option>
+  </select>
+</div>
+
+<div class="field">
+  <label for="ptsInput">New Points Balance</label>
+  <input type="number" id="ptsInput" placeholder="e.g. 85000" min="0" step="1"/>
+  <div class="current-pts" id="currentPts"></div>
+</div>
+
+<div class="actions">
+  <button class="btn-cancel" onclick="google.script.host.close()">Cancel</button>
+  <button class="btn-save" id="saveBtn" onclick="save()" disabled>Save</button>
+</div>
+<div class="status" id="status"></div>
+
+<script>
+  var cards = [];
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      cards = JSON.parse(data);
+      var sel = document.getElementById('cardSel');
+      if (!cards.length) {
+        sel.innerHTML = '<option value="">No cards found</option>';
+        return;
+      }
+      sel.innerHTML = '<option value="">— select a card —</option>';
+      cards.forEach(function(c, i) {
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = c.bank + ' — ' + c.cardName;
+        sel.appendChild(opt);
+      });
+    })
+    .withFailureHandler(function(e) {
+      document.getElementById('status').textContent = 'Could not load cards: ' + e.message;
+      document.getElementById('status').className = 'status err';
+    })
+    .getCardsForUpdate();
+
+  function onCardChange() {
+    var idx     = document.getElementById('cardSel').value;
+    var ptsEl   = document.getElementById('ptsInput');
+    var currEl  = document.getElementById('currentPts');
+    var saveBtn = document.getElementById('saveBtn');
+    if (idx === '') {
+      ptsEl.value = '';
+      currEl.innerHTML = '';
+      saveBtn.disabled = true;
+      return;
+    }
+    var card = cards[parseInt(idx, 10)];
+    ptsEl.value = card.points;
+    currEl.innerHTML = 'Current balance: <span>' + card.points.toLocaleString() + ' pts</span>';
+    saveBtn.disabled = false;
+    ptsEl.focus();
+    ptsEl.select();
+  }
+
+  function save() {
+    var idx     = document.getElementById('cardSel').value;
+    var pts     = document.getElementById('ptsInput').value;
+    var saveBtn = document.getElementById('saveBtn');
+    var status  = document.getElementById('status');
+    if (idx === '' || pts === '') return;
+    saveBtn.disabled = true;
+    status.textContent = 'Saving…';
+    status.className = 'status';
+    google.script.run
+      .withSuccessHandler(function() {
+        google.script.host.close();
+      })
+      .withFailureHandler(function(e) {
+        status.textContent = 'Error: ' + e.message;
+        status.className = 'status err';
+        saveBtn.disabled = false;
+      })
+      .updateCardPoints(JSON.stringify({
+        rowIndex: cards[parseInt(idx, 10)].rowIndex,
+        points: parseFloat(pts)
+      }));
+  }
+</script>
+</body>
+</html>
