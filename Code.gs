@@ -915,8 +915,8 @@ function refreshDashboard() {
     if (total > 0) {
       dash.getRange(r, 5)
         .setValue('$' + Math.round(total) + ' to use')
-        .setFontSize(11).setFontWeight('bold').setFontColor('#f5a623')
-        .setVerticalAlignment('middle').setHorizontalAlignment('right');
+        .setFontSize(11).setFontWeight('bold').setFontColor('#4f8ef7')
+        .setVerticalAlignment('middle').setHorizontalAlignment('center');
     }
     r++;
 
