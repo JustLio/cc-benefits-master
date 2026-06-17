@@ -256,8 +256,25 @@
           </div>`;
       } else {
         const earnRates = previewData.earnRates || [];
-        const benefits  = previewData.benefits  || [];
+        const hasVal = b => b.value !== null && b.value !== undefined;
+        // Supports both the split structure (credits/benefits) and the older
+        // single "benefits" array (derive the split from the dollar value).
+        const credits  = previewData.credits
+          ? previewData.credits
+          : (previewData.benefits || []).filter(hasVal);
+        const benefits = previewData.credits
+          ? (previewData.benefits || [])
+          : (previewData.benefits || []).filter(b => !hasVal(b));
         const fee = (previewData.annualFee != null) ? '$' + previewData.annualFee : '—';
+
+        const lineItem = b => {
+          const valStr  = hasVal(b) ? `<span class="benefit-val">$${esc(b.value)}</span>` : '';
+          const freqStr = b.frequency ? `<span class="benefit-freq">${esc(b.frequency)}</span>` : '';
+          return `<div class="benefit-item">
+            <div class="benefit-item-name">${esc(b.name) || '—'}</div>
+            ${(valStr || freqStr) ? `<div class="benefit-meta">${valStr}${freqStr}</div>` : ''}
+          </div>`;
+        };
 
         const earnHtml = earnRates.length
           ? `<div class="preview-section-label">⚡ Earn Rates</div>` +
@@ -269,17 +286,17 @@
             ).join('')
           : '';
 
+        const creditsHtml = credits.length
+          ? `<div class="preview-section-label">✨ Credits</div>` + credits.map(lineItem).join('')
+          : '';
+
         const benefitsHtml = benefits.length
-          ? `<div class="preview-section-label">✨ Benefits</div>` +
-            benefits.map(b => {
-              const valStr  = (b.value !== null && b.value !== undefined) ? `<span class="benefit-val">$${esc(b.value)}</span>` : '';
-              const freqStr = b.frequency ? `<span class="benefit-freq">${esc(b.frequency)}</span>` : '';
-              return `<div class="benefit-item">
-                <div class="benefit-item-name">${esc(b.name) || '—'}</div>
-                ${(valStr || freqStr) ? `<div class="benefit-meta">${valStr}${freqStr}</div>` : ''}
-              </div>`;
-            }).join('')
-          : `<div class="no-data-note">No benefits data found for this card.</div>`;
+          ? `<div class="preview-section-label">🎁 Benefits</div>` + benefits.map(lineItem).join('')
+          : '';
+
+        const noDataHtml = (!earnRates.length && !credits.length && !benefits.length)
+          ? `<div class="no-data-note">No card data found for this card.</div>`
+          : '';
 
         content = `
           <div class="preview-body">
@@ -293,7 +310,9 @@
             </div>
             <div class="preview-scroll">
               ${earnHtml}
+              ${creditsHtml}
               ${benefitsHtml}
+              ${noDataHtml}
             </div>
           </div>
           <div class="footer">

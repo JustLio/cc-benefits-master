@@ -63,18 +63,11 @@ function newCard(dataString) {
     cpp = json.programs[cardData.rewardsProgram] || 0;
   }
 
-  // Use user-reviewed benefits if they edited them in the preview step
-  if (data.benefits && Array.isArray(data.benefits) && data.benefits.length > 0 && cardData) {
-    cardData = Object.assign({}, cardData, { benefits: data.benefits });
-  }
-
-  // Build per-benefit override map for this card (written to Raw Data col I)
+  // Build per-credit override map for this card (written to Raw Data col I)
   var cardOverrides = {};
-  if (cardData && cardData.benefits) {
-    cardData.benefits.forEach(function(b) {
-      if (b.valueOverrides) cardOverrides[b.name] = b.valueOverrides;
-    });
-  }
+  cardItems_(cardData).forEach(function(b) {
+    if (b.valueOverrides) cardOverrides[b.name] = b.valueOverrides;
+  });
 
   // Save to Raw Data sheet
   sheet.appendRow([
@@ -473,8 +466,9 @@ function syncBenefitsFromJson() {
   Object.keys(cardInfo).forEach(function(key) {
     var info     = cardInfo[key];
     var cardData = json[key];
-    if (!cardData || !cardData.benefits) return;
-    var missing = cardData.benefits.filter(function(b) {
+    var items    = cardItems_(cardData);
+    if (!items.length) return;
+    var missing = items.filter(function(b) {
       return b.name && !info.names[b.name.trim().toLowerCase()];
     });
     if (missing.length) updates.push({ bank: info.bank, card: info.card, lastRow: info.lastRow, missing: missing });
@@ -514,8 +508,7 @@ function syncBenefitsFromJson() {
   // Update values for existing credits where JSON has changed (e.g. annual → per-period migration)
   Object.keys(cardInfo).forEach(function(key) {
     var cardData = json[key];
-    if (!cardData || !cardData.benefits) return;
-    cardData.benefits.forEach(function(b) {
+    cardItems_(cardData).forEach(function(b) {
       if (!b.name) return;
       var existing = benefitRows[key + '|' + b.name.trim()];
       if (!existing) return;
@@ -543,9 +536,8 @@ function syncBenefitsFromJson() {
     rawNotes.forEach(function(r, idx) {
       if (!r[0]) return;
       var cardData = json[r[0] + '|' + r[1]];
-      if (!cardData || !cardData.benefits) return;
       var cardOverrides = {};
-      cardData.benefits.forEach(function(b) {
+      cardItems_(cardData).forEach(function(b) {
         if (b.valueOverrides) cardOverrides[b.name] = b.valueOverrides;
       });
       var newStr = Object.keys(cardOverrides).length ? JSON.stringify(cardOverrides) : '';
@@ -1107,7 +1099,55 @@ function setupBenefitsTracker() {
   return sheet;
 }
 
-// ── Writes one card's benefits into Benefits Tracker (batched for speed) ──
+// Returns a card's credits + benefits as one combined list. Card data splits
+// dollar credits (cardData.credits) from no-value perks (cardData.benefits);
+// callers that treat every line item the same use this.
+function cardItems_(cardData) {
+  if (!cardData) return [];
+  return (cardData.credits || []).concat(cardData.benefits || []);
+}
+
+// Writes a section header row (e.g. "✨  CREDITS") on the Credits Tracker.
+function writeTrackerSectionHeader_(sheet, startRow, label) {
+  sheet.setRowHeight(startRow, 30);
+  sheet.getRange(startRow, 1, 1, 10).setBackground('#1a1d27');
+  sheet.getRange(startRow, 2)
+    .setValue(label)
+    .setFontSize(10).setFontWeight('bold').setFontColor('#6b7280')
+    .setVerticalAlignment('middle');
+  return startRow + 1;
+}
+
+// Writes a batch of credit / benefit rows on the Credits Tracker and returns the
+// next free row. autoSelected maps item names that should be pinned by default.
+function writeTrackerRows_(sheet, startRow, bank, cardName, items, autoSelected) {
+  var m = items.length;
+  if (m === 0) return startRow;
+  var bVals = [], bBgs = [], bFgClrs = [], bFgSzs = [], bFgWts = [], bVAlns = [], bWraps = [];
+  items.forEach(function(item, i) {
+    var bg       = i % 2 === 0 ? '#1a1d27' : '#141720';
+    var hasVal   = item.value !== null && item.value !== undefined;
+    var valStr   = hasVal ? '$' + item.value : '—';
+    var valColor = hasVal ? '#f5a623' : '#6b7280';
+    var autoPin  = autoSelected[item.name] === true;
+    bVals.push(['', bank, cardName, item.name, valStr, item.frequency || '—', item.category || '—', '', autoPin, '']);
+    bBgs.push(Array(10).fill(bg));
+    bFgClrs.push(['#e8eaf0','#6b7280','#9ca3af','#e8eaf0',valColor,'#6b7280','#a78bfa','#e8eaf0','#9ca3af','#e8eaf0']);
+    bFgSzs.push([11, 10, 10, 13, 15, 12, 12, 11, 11, 11]);
+    bFgWts.push(['normal','normal','normal','normal','bold','normal','normal','normal','normal','normal']);
+    bVAlns.push(Array(10).fill('middle'));
+    bWraps.push([false, false, false, true, false, false, false, false, false, false]);
+  });
+  for (var i = 0; i < m; i++) sheet.setRowHeight(startRow + i, 54);
+  sheet.getRange(startRow, 1, m, 10)
+    .setValues(bVals).setBackgrounds(bBgs).setFontColors(bFgClrs)
+    .setFontSizes(bFgSzs).setFontWeights(bFgWts).setVerticalAlignments(bVAlns)
+    .setWraps(bWraps).setFontFamily('Arial');
+  sheet.getRange(startRow, 9, m, 1).insertCheckboxes().setHorizontalAlignment('center').setVerticalAlignment('middle');
+  return startRow + m;
+}
+
+// ── Writes one card's earn rates, credits, and benefits into the Credits Tracker ──
 function addCardBenefits(bank, cardName, cardData) {
   var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('Credits Tracker');
@@ -1122,25 +1162,23 @@ function addCardBenefits(bank, cardName, cardData) {
     }
   }
 
-  var benefits      = cardData.benefits  || [];
-  var earnRates     = cardData.earnRates || [];
-  var startRow      = Math.max(lastRow + 1, 3);
+  var credits   = cardData.credits   || [];
+  var benefits  = cardData.benefits  || [];
+  var earnRates = cardData.earnRates || [];
+  var startRow  = Math.max(lastRow + 1, 3);
 
-  // Auto-select up to 3 credits to pin by default, priority: Monthly → Semi-Annual → Annual → Quarterly
+  // Auto-pin up to 3 dollar CREDITS by default, priority: Monthly → Semi-Annual → Annual → Anniversary → Quarterly
   var autoSelected = {};
   var autoCount = 0;
   ['Monthly', 'Semi-Annual', 'Annual', 'Anniversary', 'Quarterly'].forEach(function(freq) {
     if (autoCount >= 3) return;
-    benefits
+    credits
       .filter(function(b) { return b.frequency === freq; })
-      .sort(function(a, b) {
-        return ((b.value !== null && b.value !== undefined) ? parseFloat(b.value) || 0 : 0)
-             - ((a.value !== null && a.value !== undefined) ? parseFloat(a.value) || 0 : 0);
-      })
+      .sort(function(a, b) { return (parseFloat(b.value) || 0) - (parseFloat(a.value) || 0); })
       .forEach(function(b) { if (autoCount < 3) { autoSelected[b.name] = true; autoCount++; } });
   });
 
-  // ── Card group header row (single row — no benefit from batching) ──
+  // ── Card group header row ──
   sheet.setRowHeight(startRow, 40);
   sheet.getRange(startRow, 1, 1, 10).setBackground('#22263a');
   sheet.getRange(startRow, 2)
@@ -1152,16 +1190,9 @@ function addCardBenefits(bank, cardName, cardData) {
     .setFontSize(10).setFontColor('#6b7280').setVerticalAlignment('middle');
   startRow++;
 
-  // ── Earn Rates section — build 2D arrays, write in one batch ──
+  // ── Earn Rates section ──
   if (earnRates.length > 0) {
-    sheet.setRowHeight(startRow, 30);
-    sheet.getRange(startRow, 1, 1, 10).setBackground('#1a1d27');
-    sheet.getRange(startRow, 2)
-      .setValue('⚡  EARN RATES')
-      .setFontSize(10).setFontWeight('bold').setFontColor('#6b7280')
-      .setVerticalAlignment('middle');
-    startRow++;
-
+    startRow = writeTrackerSectionHeader_(sheet, startRow, '⚡  EARN RATES');
     var n = earnRates.length;
     var eVals = [], eBgs = [], eFgClrs = [], eFgSzs = [], eFgWts = [], eVAlns = [], eWraps = [];
     earnRates.forEach(function(rate, i) {
@@ -1182,38 +1213,16 @@ function addCardBenefits(bank, cardName, cardData) {
     startRow += n;
   }
 
-  // ── Benefits section — build 2D arrays, write in one batch ──
-  sheet.setRowHeight(startRow, 30);
-  sheet.getRange(startRow, 1, 1, 10).setBackground('#1a1d27');
-  sheet.getRange(startRow, 2)
-    .setValue('✨  CREDITS')
-    .setFontSize(10).setFontWeight('bold').setFontColor('#6b7280')
-    .setVerticalAlignment('middle');
-  startRow++;
+  // ── Credits section (dollar-value items) ──
+  if (credits.length > 0) {
+    startRow = writeTrackerSectionHeader_(sheet, startRow, '✨  CREDITS');
+    startRow = writeTrackerRows_(sheet, startRow, bank, cardName, credits, autoSelected);
+  }
 
+  // ── Benefits section (perks with no dollar value) ──
   if (benefits.length > 0) {
-    var m = benefits.length;
-    var bVals = [], bBgs = [], bFgClrs = [], bFgSzs = [], bFgWts = [], bVAlns = [], bWraps = [];
-    benefits.forEach(function(benefit, i) {
-      var bg       = i % 2 === 0 ? '#1a1d27' : '#141720';
-      var hasVal   = benefit.value !== null && benefit.value !== undefined;
-      var valStr   = hasVal ? '$' + benefit.value : '—';
-      var valColor = hasVal ? '#f5a623' : '#6b7280';
-      var autoPin = autoSelected[benefit.name] === true;
-      bVals.push(['', bank, cardName, benefit.name, valStr, benefit.frequency || '—', benefit.category || '—', '', autoPin, '']);
-      bBgs.push(Array(10).fill(bg));
-      bFgClrs.push(['#e8eaf0','#6b7280','#9ca3af','#e8eaf0',valColor,'#6b7280','#a78bfa','#e8eaf0','#9ca3af','#e8eaf0']);
-      bFgSzs.push([11, 10, 10, 13, 15, 12, 12, 11, 11, 11]);
-      bFgWts.push(['normal','normal','normal','normal','bold','normal','normal','normal','normal','normal']);
-      bVAlns.push(Array(10).fill('middle'));
-      bWraps.push([false, false, false, true, false, false, false, false, false, false]);
-    });
-    for (var i = 0; i < m; i++) sheet.setRowHeight(startRow + i, 54);
-    sheet.getRange(startRow, 1, m, 10)
-      .setValues(bVals).setBackgrounds(bBgs).setFontColors(bFgClrs)
-      .setFontSizes(bFgSzs).setFontWeights(bFgWts).setVerticalAlignments(bVAlns)
-      .setWraps(bWraps).setFontFamily('Arial');
-    sheet.getRange(startRow, 9, m, 1).insertCheckboxes().setHorizontalAlignment('center').setVerticalAlignment('middle');
+    startRow = writeTrackerSectionHeader_(sheet, startRow, '🎁  BENEFITS');
+    startRow = writeTrackerRows_(sheet, startRow, bank, cardName, benefits, {});
   }
 }
 

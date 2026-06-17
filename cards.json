@@ -40,7 +40,7 @@
       { "category": "Prepaid Hotels (Amex Travel portal)",                   "multiplier": 5 },
       { "category": "Everything Else",                                        "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Airline Fee Credit",                    "value": 200,   "frequency": "Annual",     "category": "Travel"    },
       { "name": "Hotel Credit (FHR / THC)",              "value": 200,   "frequency": "Annual",     "category": "Travel"    },
       { "name": "Uber Cash ($15/mo, $20 Dec)",           "value": 15,    "frequency": "Monthly",    "category": "Lifestyle", "valueOverrides": { "12": 20 } },
@@ -49,7 +49,9 @@
       { "name": "Walmart+ Membership Credit",            "value": 12.95, "frequency": "Monthly",    "category": "Lifestyle" },
       { "name": "Equinox Credit",                        "value": 300,   "frequency": "Annual",     "category": "Fitness"   },
       { "name": "CLEAR Plus Credit",                     "value": 189,   "frequency": "Annual",     "category": "Travel"    },
-      { "name": "Global Entry / TSA PreCheck",           "value": 100,   "frequency": "4 Years",    "category": "Travel"    },
+      { "name": "Global Entry / TSA PreCheck",           "value": 100,   "frequency": "4 Years",    "category": "Travel"    }
+    ],
+    "benefits": [
       { "name": "Centurion Lounge Access",               "value": null,  "frequency": "Ongoing",    "category": "Travel"    },
       { "name": "Priority Pass Select",                  "value": null,  "frequency": "Ongoing",    "category": "Travel"    }
     ]
@@ -66,13 +68,14 @@
       { "category": "Prepaid Hotels (Amex Travel portal)",      "multiplier": 2 },
       { "category": "Everything Else",                           "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Dining Credit (Grubhub, Cheesecake Factory, etc.)", "value": 10, "frequency": "Monthly",    "category": "Dining"    },
       { "name": "Uber Cash",                                          "value": 10, "frequency": "Monthly",    "category": "Lifestyle" },
       { "name": "Dunkin' Credit",                                     "value": 7,  "frequency": "Monthly",    "category": "Dining"    },
       { "name": "Resy Credit",                                        "value": 50, "frequency": "Semi-Annual","category": "Dining"    },
       { "name": "Hotel Collection Credit (Amex Travel, 2-night min)", "value": 100,"frequency": "Annual",    "category": "Travel"    }
-    ]
+    ],
+    "benefits": []
   },
 
   "American Express|Green": {
@@ -84,9 +87,10 @@
       { "category": "Dining (worldwide)",                               "multiplier": 3 },
       { "category": "Everything Else",                                  "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "CLEAR Plus Credit", "value": 189, "frequency": "Annual", "category": "Travel" }
-    ]
+    ],
+    "benefits": []
   },
 
   "American Express|Blue Cash Preferred": {
@@ -100,9 +104,10 @@
       { "category": "Transit",                          "multiplier": 3 },
       { "category": "Everything Else",                  "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Disney Bundle Credit", "value": 7, "frequency": "Monthly", "category": "Lifestyle" }
-    ]
+    ],
+    "benefits": []
   },
 
   "American Express|Blue Cash Everyday": {
@@ -115,9 +120,10 @@
       { "category": "U.S. Gas Stations (up to $6k/yr)",  "multiplier": 3 },
       { "category": "Everything Else",                   "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Disney Bundle Credit", "value": 7, "frequency": "Monthly", "category": "Lifestyle" }
-    ]
+    ],
+    "benefits": []
   },
 
   "American Express|Delta SkyMiles Gold": {
@@ -130,8 +136,10 @@
       { "category": "U.S. Supermarkets",   "multiplier": 2 },
       { "category": "Everything Else",      "multiplier": 1 }
     ],
+    "credits": [
+      { "name": "Delta Stays Credit",     "value": 200, "frequency": "Annual",  "category": "Travel" }
+    ],
     "benefits": [
-      { "name": "Delta Stays Credit",     "value": 200, "frequency": "Annual",  "category": "Travel" },
       { "name": "First Checked Bag Free", "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "Priority Boarding",      "value": null,"frequency": "Ongoing", "category": "Travel" }
     ]
@@ -148,11 +156,13 @@
       { "category": "U.S. Supermarkets",   "multiplier": 2 },
       { "category": "Everything Else",      "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Delta Stays Credit",          "value": 200, "frequency": "Annual",  "category": "Travel"  },
       { "name": "Resy Credit",                 "value": 10,  "frequency": "Monthly", "category": "Dining"  },
+      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel"  }
+    ],
+    "benefits": [
       { "name": "Companion Certificate",       "value": null,"frequency": "Anniversary",  "category": "Travel"  },
-      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel"  },
       { "name": "First & Second Bag Free",     "value": null,"frequency": "Ongoing", "category": "Travel"  }
     ]
   },
@@ -167,11 +177,13 @@
       { "category": "All Other Eligible (up to $150k/yr)","multiplier": 1.5 },
       { "category": "Everything Else",                    "multiplier": 1   }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Delta Stays Credit",          "value": 200, "frequency": "Annual",  "category": "Travel"  },
       { "name": "Resy Credit",                 "value": 20,  "frequency": "Monthly", "category": "Dining"  },
+      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel"  }
+    ],
+    "benefits": [
       { "name": "Companion Certificate",       "value": null,"frequency": "Anniversary",  "category": "Travel"  },
-      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel"  },
       { "name": "Delta Sky Club Access",       "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "Centurion Lounge Access",     "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "First & Second Bag Free",     "value": null,"frequency": "Ongoing", "category": "Travel"  }
@@ -189,6 +201,7 @@
       { "category": "U.S. Gas Stations",       "multiplier": 5 },
       { "category": "Everything Else",          "multiplier": 3 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -204,8 +217,10 @@
       { "category": "U.S. Online Retail (up to $15k/yr)",   "multiplier": 4  },
       { "category": "Everything Else",                       "multiplier": 3  }
     ],
+    "credits": [
+      { "name": "Hilton Resort Credit",                    "value": 50,  "frequency": "Quarterly","category": "Travel" }
+    ],
     "benefits": [
-      { "name": "Hilton Resort Credit",                    "value": 50,  "frequency": "Quarterly","category": "Travel" },
       { "name": "Free Weekend Night (after $15k spend)",   "value": null,"frequency": "Annual",  "category": "Travel" },
       { "name": "Priority Pass Select (10 visits)",        "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "Gold Status",                             "value": null,"frequency": "Ongoing", "category": "Travel" }
@@ -222,10 +237,12 @@
       { "category": "Car Rentals (direct)",             "multiplier": 7  },
       { "category": "Everything Else",                  "multiplier": 3  }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Hilton Resort Credit",            "value": 100, "frequency": "Quarterly","category": "Travel" },
       { "name": "Airline Fee Credit",              "value": 50,  "frequency": "Quarterly","category": "Travel" },
-      { "name": "CLEAR Plus Credit",               "value": 189, "frequency": "Annual",  "category": "Travel" },
+      { "name": "CLEAR Plus Credit",               "value": 189, "frequency": "Annual",  "category": "Travel" }
+    ],
+    "benefits": [
       { "name": "Annual Free Night Certificate",   "value": null,"frequency": "Anniversary",  "category": "Travel" },
       { "name": "Diamond Status",                  "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "Priority Pass Select",            "value": null,"frequency": "Ongoing", "category": "Travel" }
@@ -242,11 +259,13 @@
       { "category": "Flights (booked directly)",   "multiplier": 3 },
       { "category": "Everything Else",              "multiplier": 2 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Brilliant Dining Credit",                             "value": 25,  "frequency": "Monthly",  "category": "Dining"  },
-      { "name": "Annual Free Night Award (up to 85k pts)",             "value": null,"frequency": "Anniversary",  "category": "Travel"  },
       { "name": "Property Credit (Ritz/St. Regis, 2-night)",          "value": 100, "frequency": "Annual",  "category": "Travel"  },
-      { "name": "Global Entry / TSA PreCheck",                         "value": 100, "frequency": "4 Years", "category": "Travel"  },
+      { "name": "Global Entry / TSA PreCheck",                         "value": 100, "frequency": "4 Years", "category": "Travel"  }
+    ],
+    "benefits": [
+      { "name": "Annual Free Night Award (up to 85k pts)",             "value": null,"frequency": "Anniversary",  "category": "Travel"  },
       { "name": "Priority Pass Select",                                "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "Platinum Elite Status",                               "value": null,"frequency": "Ongoing", "category": "Travel"  }
     ]
@@ -262,6 +281,7 @@
       { "category": "U.S. Supermarkets",      "multiplier": 4 },
       { "category": "Everything Else",         "multiplier": 2 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "Free Night Award at 50k (after $15k spend)", "value": null,"frequency": "Annual",  "category": "Travel" },
       { "name": "Gold Elite Status",                          "value": null,"frequency": "Ongoing", "category": "Travel" }
@@ -277,6 +297,7 @@
       { "category": "U.S. Gas Stations (2x; 3x w/ 30+ txns)",                 "multiplier": 2 },
       { "category": "Everything Else (1x; 1.5x w/ 30+ txns)",                 "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -292,10 +313,12 @@
       { "category": "Other Travel",                                           "multiplier": 2 },
       { "category": "Everything Else",                                        "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Hotel Credit (Chase Travel)", "value": 50,  "frequency": "Anniversary", "category": "Travel"    },
       { "name": "DoorDash DashPass",                  "value": 120, "frequency": "Annual", "category": "Dining"    },
-      { "name": "Instacart+ Membership",              "value": 60,  "frequency": "Annual", "category": "Lifestyle" },
+      { "name": "Instacart+ Membership",              "value": 60,  "frequency": "Annual", "category": "Lifestyle" }
+    ],
+    "benefits": [
       { "name": "10% Anniversary Points Bonus",       "value": null,"frequency": "Anniversary", "category": "Rewards"   }
     ]
   },
@@ -311,14 +334,16 @@
       { "category": "Other Travel",                                "multiplier": 3  },
       { "category": "Everything Else",                             "multiplier": 1  }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Travel Credit",                    "value": 300, "frequency": "Anniversary",  "category": "Travel"    },
       { "name": "Hotel Credit (The Edit by Chase Travel)", "value": 500, "frequency": "Annual",  "category": "Travel"    },
       { "name": "Dining Credit",                           "value": 300, "frequency": "Annual",  "category": "Dining"    },
       { "name": "Global Entry / TSA PreCheck",             "value": 100, "frequency": "4 Years", "category": "Travel"    },
       { "name": "DoorDash DashPass",                       "value": 120, "frequency": "Annual",  "category": "Dining"    },
       { "name": "Instacart+ Membership",                   "value": 60,  "frequency": "Annual",  "category": "Lifestyle" },
-      { "name": "Lyft Pink Membership",                    "value": 120, "frequency": "Annual",  "category": "Lifestyle" },
+      { "name": "Lyft Pink Membership",                    "value": 120, "frequency": "Annual",  "category": "Lifestyle" }
+    ],
+    "benefits": [
       { "name": "Priority Pass Lounge Access",             "value": null,"frequency": "Ongoing", "category": "Travel"    }
     ]
   },
@@ -333,6 +358,7 @@
       { "category": "Drugstores",                   "multiplier": 3   },
       { "category": "Everything Else",              "multiplier": 1.5 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -347,6 +373,7 @@
       { "category": "Drugstores",                                            "multiplier": 3 },
       { "category": "Everything Else",                                       "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -360,10 +387,12 @@
       { "category": "Hotel stays",      "multiplier": 2 },
       { "category": "Everything Else",  "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "United Club One-Time Passes (x2)", "value": 100, "frequency": "Anniversary",  "category": "Travel" },
+      { "name": "Global Entry / TSA PreCheck",      "value": 100, "frequency": "4 Years", "category": "Travel" }
+    ],
+    "benefits": [
       { "name": "First Checked Bag Free",           "value": null,"frequency": "Ongoing", "category": "Travel" },
-      { "name": "Global Entry / TSA PreCheck",      "value": 100, "frequency": "4 Years", "category": "Travel" },
       { "name": "Priority Boarding",                "value": null,"frequency": "Ongoing", "category": "Travel" }
     ]
   },
@@ -379,11 +408,13 @@
       { "category": "All Other Travel",    "multiplier": 2 },
       { "category": "Everything Else",     "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "United Travel Credit",         "value": 125, "frequency": "Anniversary",  "category": "Travel"  },
-      { "name": "5,000 Anniversary Bonus Miles","value": null,"frequency": "Anniversary",  "category": "Rewards" },
-      { "name": "Two Checked Bags Free",        "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "Global Entry / TSA PreCheck",  "value": 100, "frequency": "4 Years", "category": "Travel"  }
+    ],
+    "benefits": [
+      { "name": "5,000 Anniversary Bonus Miles","value": null,"frequency": "Anniversary",  "category": "Rewards" },
+      { "name": "Two Checked Bags Free",        "value": null,"frequency": "Ongoing", "category": "Travel"  }
     ]
   },
 
@@ -397,10 +428,12 @@
       { "category": "All Other Travel", "multiplier": 2 },
       { "category": "Everything Else",  "multiplier": 1 }
     ],
+    "credits": [
+      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel" }
+    ],
     "benefits": [
       { "name": "United Club Membership",      "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "First & Second Bag Free",     "value": null,"frequency": "Ongoing", "category": "Travel" },
-      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel" },
       { "name": "Premier Access",              "value": null,"frequency": "Ongoing", "category": "Travel" }
     ]
   },
@@ -417,6 +450,7 @@
       { "category": "Fitness Clubs",              "multiplier": 2 },
       { "category": "Everything Else",             "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "Free Night Certificate (Cat. 1-4)", "value": null,"frequency": "Anniversary",  "category": "Travel" },
       { "name": "Discoverist Status",                "value": null,"frequency": "Ongoing", "category": "Travel" }
@@ -434,10 +468,12 @@
       { "category": "Gas Stations",                               "multiplier": 5  },
       { "category": "Everything Else",                            "multiplier": 3  }
     ],
+    "credits": [
+      { "name": "United TravelBank Cash",                        "value": 50,  "frequency": "Annual",  "category": "Travel" },
+      { "name": "Global Entry / TSA PreCheck",                   "value": 100, "frequency": "4 Years", "category": "Travel" }
+    ],
     "benefits": [
       { "name": "Annual Free Night Certificate (up to 40k pts)", "value": null,"frequency": "Anniversary",  "category": "Travel" },
-      { "name": "United TravelBank Cash",                        "value": 50,  "frequency": "Annual",  "category": "Travel" },
-      { "name": "Global Entry / TSA PreCheck",                   "value": 100, "frequency": "4 Years", "category": "Travel" },
       { "name": "Platinum Elite Status",                         "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "4th Award Night Free",                          "value": null,"frequency": "Ongoing", "category": "Travel" }
     ]
@@ -452,6 +488,7 @@
       { "category": "Gas, Dining & Grocery (up to $6k combined/yr)", "multiplier": 3 },
       { "category": "Everything Else",                               "multiplier": 2 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "Annual Free Night Certificate (up to 35k pts)", "value": null,"frequency": "Anniversary",  "category": "Travel" },
       { "name": "15 Elite Night Credits",                        "value": null,"frequency": "Annual",  "category": "Travel" },
@@ -468,10 +505,12 @@
       { "category": "Hotels & Rental Cars (Capital One Travel)", "multiplier": 5  },
       { "category": "Everything Else",                           "multiplier": 2  }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Travel Credit (Capital One Travel)", "value": 300, "frequency": "Anniversary",  "category": "Travel"  },
+      { "name": "Global Entry / TSA PreCheck",               "value": 100, "frequency": "4 Years", "category": "Travel"  }
+    ],
+    "benefits": [
       { "name": "10,000 Anniversary Bonus Miles",            "value": null,"frequency": "Anniversary",  "category": "Rewards" },
-      { "name": "Global Entry / TSA PreCheck",               "value": 100, "frequency": "4 Years", "category": "Travel"  },
       { "name": "Priority Pass Lounge Access",               "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "Capital One Lounge Access",                 "value": null,"frequency": "Ongoing", "category": "Travel"  }
     ]
@@ -485,9 +524,10 @@
       { "category": "Hotels & Car Rentals (Capital One Travel)", "multiplier": 5 },
       { "category": "Everything Else",                           "multiplier": 2 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel" }
-    ]
+    ],
+    "benefits": []
   },
 
   "Capital One|Savor": {
@@ -504,6 +544,7 @@
       { "category": "Grocery Stores (excl. Walmart/Target)",   "multiplier": 3  },
       { "category": "Everything Else",                          "multiplier": 1  }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -521,6 +562,7 @@
       { "category": "Grocery Stores (excl. Walmart/Target)",   "multiplier": 3  },
       { "category": "Everything Else",                          "multiplier": 1  }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -532,6 +574,7 @@
       { "category": "Hotels & Car Rentals (Capital One Travel)", "multiplier": 5   },
       { "category": "Everything Else",                           "multiplier": 1.5 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -547,9 +590,10 @@
       { "category": "Air Travel",                                       "multiplier": 3  },
       { "category": "Everything Else",                                  "multiplier": 1  }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Hotel Savings ($100 off $500+ via Citi Travel)", "value": 100, "frequency": "Annual", "category": "Travel" }
-    ]
+    ],
+    "benefits": []
   },
 
   "Citi|Double Cash": {
@@ -559,6 +603,7 @@
     "earnRates": [
       { "category": "Everything (1% on purchase + 1% on payment)", "multiplier": 2 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -570,6 +615,7 @@
       { "category": "Top Eligible Spend Category (up to $500/billing cycle)", "multiplier": 5 },
       { "category": "Everything Else",                                         "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -583,6 +629,7 @@
       { "category": "Gas Stations",       "multiplier": 2 },
       { "category": "Everything Else",    "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "First Checked Bag Free",                    "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "Preferred Boarding",                        "value": null,"frequency": "Ongoing", "category": "Travel" },
@@ -600,12 +647,14 @@
       { "category": "Car Rentals (select)",    "multiplier": 10 },
       { "category": "Everything Else",         "multiplier": 1  }
     ],
+    "credits": [
+      { "name": "Global Entry / TSA PreCheck",      "value": 100, "frequency": "4 Years", "category": "Travel" },
+      { "name": "DoorDash Credit",                  "value": 10,  "frequency": "Monthly", "category": "Dining" }
+    ],
     "benefits": [
       { "name": "Admirals Club Membership",         "value": null,"frequency": "Ongoing", "category": "Travel" },
       { "name": "First & Second Checked Bag Free",  "value": null,"frequency": "Ongoing", "category": "Travel" },
-      { "name": "Global Entry / TSA PreCheck",      "value": 100, "frequency": "4 Years", "category": "Travel" },
-      { "name": "Priority Boarding",                "value": null,"frequency": "Ongoing", "category": "Travel" },
-      { "name": "DoorDash Credit",                  "value": 10,  "frequency": "Monthly", "category": "Dining" }
+      { "name": "Priority Boarding",                "value": null,"frequency": "Ongoing", "category": "Travel" }
     ]
   },
 
@@ -622,6 +671,7 @@
       { "category": "Phone Plans",                "multiplier": 3 },
       { "category": "Everything Else",            "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -636,9 +686,10 @@
       { "category": "Dining",          "multiplier": 3 },
       { "category": "Everything Else", "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Airline Credit", "value": 50, "frequency": "Annual", "category": "Travel" }
-    ]
+    ],
+    "benefits": []
   },
 
   "Wells Fargo|Active Cash": {
@@ -648,6 +699,7 @@
     "earnRates": [
       { "category": "Everything", "multiplier": 2 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -659,10 +711,11 @@
       { "category": "Travel & Dining", "multiplier": 2   },
       { "category": "Everything Else", "multiplier": 1.5 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Airline Incidental Credit",   "value": 100, "frequency": "Annual",  "category": "Travel" },
       { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years", "category": "Travel" }
-    ]
+    ],
+    "benefits": []
   },
 
   "Bank of America|Premium Rewards Elite": {
@@ -673,10 +726,12 @@
       { "category": "Travel & Dining", "multiplier": 2   },
       { "category": "Everything Else", "multiplier": 1.5 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Airline Incidental Credit",   "value": 300, "frequency": "Annual",   "category": "Travel"    },
       { "name": "Lifestyle Credit",            "value": 50,  "frequency": "Quarterly","category": "Lifestyle" },
-      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years",  "category": "Travel"    },
+      { "name": "Global Entry / TSA PreCheck", "value": 100, "frequency": "4 Years",  "category": "Travel"    }
+    ],
+    "benefits": [
       { "name": "Priority Pass Select",        "value": null,"frequency": "Ongoing",  "category": "Travel"    }
     ]
   },
@@ -688,6 +743,7 @@
     "earnRates": [
       { "category": "Everything", "multiplier": 1.5 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -701,6 +757,7 @@
       { "category": "Local Transit & Commuting",                 "multiplier": 2 },
       { "category": "Everything Else",                           "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "Companion Fare (from $122 + taxes/fees)", "value": null,"frequency": "Anniversary","category": "Travel" },
       { "name": "Free Checked Bag",                        "value": null,"frequency": "Ongoing", "category": "Travel" }
@@ -716,10 +773,12 @@
       { "category": "Travel & Mobile Wallet (Apple/Google/Samsung Pay)",   "multiplier": 3 },
       { "category": "Everything Else",                                      "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Annual Travel & Dining Credit", "value": 325, "frequency": "Anniversary",  "category": "Travel" },
-      { "name": "12 Priority Pass Lounge Visits","value": null,"frequency": "Annual",  "category": "Travel" },
       { "name": "Global Entry / TSA PreCheck",   "value": 100, "frequency": "4 Years", "category": "Travel" }
+    ],
+    "benefits": [
+      { "name": "12 Priority Pass Lounge Visits","value": null,"frequency": "Annual",  "category": "Travel" }
     ]
   },
 
@@ -735,10 +794,12 @@
       { "category": "Grocery Stores",             "multiplier": 2 },
       { "category": "Everything Else",            "multiplier": 1 }
     ],
-    "benefits": [
+    "credits": [
       { "name": "Streaming Credit",             "value": 15,  "frequency": "Semi-Annual","category": "Lifestyle" },
-      { "name": "4 Priority Pass Lounge Visits","value": null,"frequency": "Annual",     "category": "Travel"    },
       { "name": "Global Entry / TSA PreCheck",  "value": 100, "frequency": "4 Years",    "category": "Travel"    }
+    ],
+    "benefits": [
+      { "name": "4 Priority Pass Lounge Visits","value": null,"frequency": "Annual",     "category": "Travel"    }
     ]
   },
 
@@ -751,6 +812,7 @@
       { "category": "1 Everyday Category of Choice",                    "multiplier": 2 },
       { "category": "Everything Else",                                  "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": []
   },
 
@@ -764,6 +826,7 @@
       { "category": "Rent (no transaction fee, up to 100k pts/yr)",   "multiplier": 1 },
       { "category": "Everything Else (min. 5 transactions/month)",    "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "Lyft Pink Membership",                  "value": null,"frequency": "Ongoing", "category": "Lifestyle" },
       { "name": "DoorDash DashPass",                     "value": null,"frequency": "Ongoing", "category": "Dining"    },
@@ -779,6 +842,7 @@
       { "category": "Rotating Quarterly Categories (up to $1,500/quarter, then 1%)", "multiplier": 5 },
       { "category": "Everything Else",                                                "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "First-Year Cashback Match", "value": null, "frequency": "Annual", "category": "Rewards" }
     ]
@@ -791,6 +855,7 @@
     "earnRates": [
       { "category": "Everything", "multiplier": 1.5 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "First-Year Miles Match", "value": null, "frequency": "Annual", "category": "Rewards" }
     ]
@@ -807,6 +872,7 @@
       { "category": "Streaming Services",                 "multiplier": 2 },
       { "category": "Everything Else",                    "multiplier": 1 }
     ],
+    "credits": [],
     "benefits": [
       { "name": "3,000 Anniversary Bonus Points", "value": null,"frequency": "Anniversary", "category": "Rewards" },
       { "name": "2 EarlyBird Check-Ins",          "value": null,"frequency": "Annual", "category": "Travel"  }
@@ -824,8 +890,10 @@
       { "category": "Streaming Services",                 "multiplier": 2 },
       { "category": "Everything Else",                    "multiplier": 1 }
     ],
+    "credits": [
+      { "name": "Southwest Annual Travel Credit",  "value": 75,  "frequency": "Anniversary",  "category": "Travel"  }
+    ],
     "benefits": [
-      { "name": "Southwest Annual Travel Credit",  "value": 75,  "frequency": "Anniversary",  "category": "Travel"  },
       { "name": "7,500 Anniversary Bonus Points",  "value": null,"frequency": "Anniversary",  "category": "Rewards" },
       { "name": "4 Upgraded Boardings per year",   "value": null,"frequency": "Annual",  "category": "Travel"  },
       { "name": "25% Back on In-Flight Purchases", "value": null,"frequency": "Ongoing", "category": "Travel"  }
@@ -842,8 +910,10 @@
       { "category": "Grocery Stores",   "multiplier": 2 },
       { "category": "Everything Else",  "multiplier": 1 }
     ],
+    "credits": [
+      { "name": "JetBlue Vacation Credit",        "value": 100, "frequency": "Anniversary",  "category": "Travel"  }
+    ],
     "benefits": [
-      { "name": "JetBlue Vacation Credit",        "value": 100, "frequency": "Anniversary",  "category": "Travel"  },
       { "name": "5,000 Anniversary Bonus Points", "value": null,"frequency": "Anniversary",  "category": "Rewards" },
       { "name": "First Checked Bag Free",         "value": null,"frequency": "Ongoing", "category": "Travel"  },
       { "name": "10% Points Back on Redemptions", "value": null,"frequency": "Ongoing", "category": "Rewards" }
