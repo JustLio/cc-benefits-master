@@ -10,6 +10,12 @@ var CARD_DATA_URL = 'https://raw.githubusercontent.com/JustLio/cc-benefits-maste
 // instead of on every single edit. See refreshDashboard / refreshAnnualFeeAnalyzer.
 var LAYOUT_VERSION = '1';
 
+// Header button icons (40px PNGs, base64). Inserted as over-grid images on the
+// Dashboard and bound to their forms via OverGridImage.assignScript. See
+// addDashboardButtons. BTN_ADD = blue "+", BTN_POINTS = green "↑".
+var BTN_ADD_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAACcklEQVR4nO2dQVbDMAwFBY8FnA6uAgeBq8DpYAcr96UlThxb0pfiP1tKm8xEbtLwqAghM3On/YTP79+/2s8Zja+3JzVvKk80g/QaozG6f3lm6TV6Ytz3vBDlr9Pj5VAxim+ndRqaJ4Dyj9HqqykA5ffR4m03AOWPsedvMwDl67DlsRqA8nWp+ew6DSV6rAbg0W/Dmtd/ASjfllu/XILAMACYqwBcfnxYeuYEgGEAMJcAXH58Kb45AWAe0BvQw+frY/VnLx8/jlsyTqoAW+JvH5MlRJolqEX+yONRpAjQKzNDhPABRiVGjxA6gJa8yBFCB5iBsAG0j9qoUxA2wCwwABgGAMMAYBgADAOAYQAwDAAG8nE06qKo5XW9P8Z2DRD1anSJ9/0EtyUog/wlXtvrEiCb/ILHdpsHyCq/YL39pgGyyy9Y7gdPQ8GYBTjL0V+w2h9OABgGAMMAYBgADAOAYQAwZgGy/HFsK1b7wwkAYxrgLFNguR/mE5A9gvX2uyxBWSN4bLfbe0C2CF7b63pLsuxU5A/qTn1PuNCykxaRIk4hT0PBMAAYBgDDAGAYAAwDgGEAMAwAJmwA7YumiBdhIoEDzELoAFpHbdSjXyR4AJFxeZHliyQIINIvMbp8kSQBRI7LzCBfJNm/LGu5n5BFfCFVgEI2yVukWYLOyiWA5tfzkX2Kb04AGAYAcxWAy5APS8+cADAMAOZfAC5Dttz6XZ0ARrBhzSuXIDDVAJwCXWo+NyeAEXTY8ri7BDHCGHv+mt4DGKGPFm/Nb8KMcIxWX11S+ZVXdY4eqF2noZyGdXq8qIiceSJGD0b1I3mGGFwBTsQf3NPImxgyBbYAAAAASUVORK5CYII=';
+var BTN_POINTS_PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAACcklEQVR4nO2d21HEMBAEBUVAkADEBIFATJAAlxF87dU9LFuWdzU79vQ/PrlbK0OZqitFiCPz4H3B19/PP+9rZuPn5cPNm8uFjiC9xtYY3T98ZOk1emI89nyQ5E/T42VVMYlvp3UamidA8tfR6qspgOT30eJtMYDkb2PJ32wAyfdhzmM1gOT7UvPZ9Wuo8GMygHZ/DFNe7wJIfiy3fnUEgVEAMFcBdPyM4dKzJgCMAoA5B9DxMxbzrQkAQx/g+/kdvYRNUAcw+cwRaAPcSmeNQBmgJpsxAl2AJclsEagCtMplikATYK1Ulgg0AfYKRYDe3cwwBekDbJWYPULqAF7yMkdIG8BbWtYIKQNEycoYIV2AaEnZIqQKMEpOpghpAoyWkiVCigAoGRkiwAOgJaA/HxoAffMGch2wAFnkG6j1QAJkk28g1gV/Bhyd4QGy7n5j9PqGBsgu3xi5zmEBWOQbo9Y7JACbfGPEusMDsMo3otcfGoBdvhF5H2EB9iLfiLqfp5CrllLeTl8u1/G4ca+1RKA/xMCkDqCX8iIcBQCjAGAUAIwCgFEAMAoARgHAKAAYBQCjAGAUAIwCgFEAMKkDeL1I0QsZUSV9gK27N/PuL4UgwN6hCNC7i7Pv/lIC/yvCG5PZ8n6XQbxBE8CYC8Ek3qALYDDKnoLiGbBnzgE8v55PLGO+NQFgFADMVQAdQ2O49KwJAKMAYO4C6BiK5dbv5AQoQgxTXnUEgakG0BT4UvM5OwGK4MOcx8UjSBG2seSv6RmgCH20eGt+CCvCOlp9dUnVV17VWbtRu34N1TRM0+PFReSRJ2LrZnTfyUeIoRNgR/wD2zjR9mGN0qYAAAAASUVORK5CYII=';
+
 // Opens the HTML dialog as a modal popup
 function showEntryForm() {
   var html = HtmlService.createHtmlOutputFromFile('Form')
@@ -600,7 +606,7 @@ function setupDashboard() {
     .setFontSize(10).setFontColor('#6b7280')
     .setVerticalAlignment('middle').setHorizontalAlignment('right');
 
-  // G1: empty — real "New Card" button is a drawing object assigned to showEntryForm
+  // G1: holds the floating "+" and "↑" buttons, inserted by addDashboardButtons
   dash.getRange('G1').setValue('').setBackground('#1a1d27');
 
   // ─── ROW 2: gap ───
@@ -656,7 +662,33 @@ function setupDashboard() {
   dash.setFrozenRows(1);
 
   refreshDashboard();
-  SpreadsheetApp.getUi().alert('✅ Dashboard is ready. Use Insert → Drawing to add a "New Card" button, then right-click it → Assign script → showEntryForm.');
+  addDashboardButtons();
+  SpreadsheetApp.getUi().alert('✅ Dashboard is ready, with the ＋ Add Card and ↑ Update Points buttons in the header.');
+}
+
+// Inserts the floating "＋ Add Card" and "↑ Update Points" buttons in the Dashboard
+// header and binds them to their forms via OverGridImage.assignScript. Safe to run
+// standalone (re-run any time) or from setupDashboard. Re-running replaces the
+// existing buttons rather than stacking new ones.
+function addDashboardButtons() {
+  var ss   = SpreadsheetApp.getActiveSpreadsheet();
+  var dash = ss.getSheetByName('Dashboard');
+  if (!dash) { SpreadsheetApp.getUi().alert('Run setupDashboard first — no Dashboard sheet found.'); return; }
+
+  // Remove existing over-grid images so re-running doesn't stack buttons
+  dash.getImages().forEach(function(img) { img.remove(); });
+
+  var addBlob = Utilities.newBlob(Utilities.base64Decode(BTN_ADD_PNG_B64),    'image/png', 'add.png');
+  var ptsBlob = Utilities.newBlob(Utilities.base64Decode(BTN_POINTS_PNG_B64), 'image/png', 'points.png');
+
+  // Anchor both to the header (column G, row 1), sized 40px, side by side
+  var addImg = dash.insertImage(addBlob, 7, 1, 12, 20);
+  addImg.setWidth(40).setHeight(40);
+  addImg.assignScript('showEntryForm');
+
+  var ptsImg = dash.insertImage(ptsBlob, 7, 1, 66, 20);
+  ptsImg.setWidth(40).setHeight(40);
+  ptsImg.assignScript('showUpdatePointsForm');
 }
 
 // Returns true if the gated static layout for `key` should be (re)applied —
