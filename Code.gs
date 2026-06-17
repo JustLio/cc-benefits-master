@@ -108,11 +108,20 @@ function showDashboard() {
   SpreadsheetApp.getUi().showModalDialog(html, 'Card Dashboard');
 }
 
-function getNextReset_(frequency) {
+function getNextReset_(frequency, anniversaryDate) {
   var today = new Date(); today.setHours(0,0,0,0);
   var y = today.getFullYear(), m = today.getMonth();
   if (frequency === 'Monthly')     return new Date(y, m + 1, 0);
   if (frequency === 'Annual')      return new Date(y, 12, 0); // Dec 31, calendar-year reset
+  if (frequency === 'Anniversary') {
+    // Resets on the cardmember's renewal anniversary — needs the card's renewal date.
+    if (!anniversaryDate) return null;
+    var a = new Date(anniversaryDate);
+    if (isNaN(a.getTime())) return null;
+    var next = new Date(y, a.getMonth(), a.getDate());
+    if (next < today) next = new Date(y + 1, a.getMonth(), a.getDate());
+    return next;
+  }
   if (frequency === 'Semi-Annual') return m <= 5 ? new Date(y, 6, 0) : new Date(y, 12, 0);
   if (frequency === 'Quarterly') {
     var ends = [2, 5, 8, 11];
@@ -755,6 +764,12 @@ function refreshDashboard() {
     try { rawUsed[r[0] + '|' + r[1]] = JSON.parse(r[9]); } catch(e) {}
   });
 
+  // Build renewal-date map from Raw Data col F — drives "Anniversary" reset dates.
+  var renewalByCard = {};
+  rawData.forEach(function(r) {
+    if (r[0]) renewalByCard[r[0] + '|' + r[1]] = r[5];
+  });
+
   // Read Credits Tracker — build pinned credits per card (all frequencies)
   var benefitsByCard = {};
   var cardTotals = {};
@@ -774,7 +789,7 @@ function refreshDashboard() {
       var valDisplay = perPeriod !== null
         ? '$' + (perPeriod % 1 === 0 ? perPeriod : perPeriod.toFixed(2))
         : '—';
-      var rd2       = getNextReset_(br[4]);
+      var rd2       = getNextReset_(br[4], renewalByCard[key]);
       var dLeft2    = rd2 ? Math.round((rd2 - today) / 86400000) : null;
       var notesUsed = (rawUsed[key] || {})[br[2]] || 0;
       var remaining = perPeriod !== null ? Math.max(0, Math.round((perPeriod - notesUsed) * 100) / 100) : null;
@@ -786,6 +801,8 @@ function refreshDashboard() {
       var rstLabel;
       if (rd2) {
         rstLabel = daysStr + '\n' + Utilities.formatDate(rd2, Session.getScriptTimeZone(), 'MMM d');
+      } else if (br[4] === 'Anniversary') {
+        rstLabel = 'On anniversary\n(add renewal date)';
       } else if (br[4] === 'Ongoing') {
         rstLabel = 'Ongoing';
       } else if (br[4] === '4 Years') {
@@ -1112,7 +1129,7 @@ function addCardBenefits(bank, cardName, cardData) {
   // Auto-select up to 3 credits to pin by default, priority: Monthly → Semi-Annual → Annual → Quarterly
   var autoSelected = {};
   var autoCount = 0;
-  ['Monthly', 'Semi-Annual', 'Annual', 'Quarterly'].forEach(function(freq) {
+  ['Monthly', 'Semi-Annual', 'Annual', 'Anniversary', 'Quarterly'].forEach(function(freq) {
     if (autoCount >= 3) return;
     benefits
       .filter(function(b) { return b.frequency === freq; })
