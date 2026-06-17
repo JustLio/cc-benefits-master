@@ -112,6 +112,7 @@ function getNextReset_(frequency) {
   var today = new Date(); today.setHours(0,0,0,0);
   var y = today.getFullYear(), m = today.getMonth();
   if (frequency === 'Monthly')     return new Date(y, m + 1, 0);
+  if (frequency === 'Annual')      return new Date(y, 12, 0); // Dec 31, calendar-year reset
   if (frequency === 'Semi-Annual') return m <= 5 ? new Date(y, 6, 0) : new Date(y, 12, 0);
   if (frequency === 'Quarterly') {
     var ends = [2, 5, 8, 11];
@@ -780,9 +781,18 @@ function refreshDashboard() {
       // "$X to use" reflects what's still UNused this period, not the full value.
       if (remaining !== null) cardTotals[key] += remaining;
       var daysStr   = dLeft2 === null ? null : dLeft2 < 0 ? 'Overdue' : dLeft2 === 0 ? 'Today' : dLeft2 + ' days left';
-      var rstLabel  = rd2
-        ? daysStr + '\n' + Utilities.formatDate(rd2, Session.getScriptTimeZone(), 'MMM d')
-        : '—';
+      // Period-based freqs get a date + countdown; perpetual / multi-year freqs
+      // have no computable reset cycle, so show a label instead of a blank dash.
+      var rstLabel;
+      if (rd2) {
+        rstLabel = daysStr + '\n' + Utilities.formatDate(rd2, Session.getScriptTimeZone(), 'MMM d');
+      } else if (br[4] === 'Ongoing') {
+        rstLabel = 'Ongoing';
+      } else if (br[4] === '4 Years') {
+        rstLabel = 'Every 4 yrs';
+      } else {
+        rstLabel = '—';
+      }
       benefitsByCard[key].push({ name: br[2], valStr: valDisplay, valueNum: perPeriod, remaining: remaining, frequency: br[4] || '—', resetLabel: rstLabel, daysLeft: dLeft2 });
     });
     Object.keys(benefitsByCard).forEach(function(key) {
